@@ -10,7 +10,7 @@ export const PostsList = () => {
     isSuccess,
     isError,
     error,
-  } = useGetPostsQuery(null)
+  } = useGetPostsQuery()
 
   // useMemo prevents sorting on every rerender
   const sortedPosts = useMemo(() => {

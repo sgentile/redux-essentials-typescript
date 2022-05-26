@@ -3,19 +3,19 @@ import {
   createEntityAdapter,
   createSelector,
   createSlice,
-  PayloadAction
+  PayloadAction,
 } from '@reduxjs/toolkit'
 import { client } from '../../api/client'
 import { Post, Reaction } from '../../app/types'
 import { RootState } from '../../app/store'
 
 const postsAdapter = createEntityAdapter<Post>({
-  sortComparer: (a, b) => b.date.localeCompare(a.date)
+  sortComparer: (a, b) => b.date.localeCompare(a.date),
 })
 
 const initialState = postsAdapter.getInitialState({
   status: 'idle',
-  error: null
+  error: null,
 })
 
 // Thunk (Async Dispatch)
@@ -40,23 +40,27 @@ const postSlice = createSlice({
   initialState,
   reducers: {
     // Actions (Don't try to mutate any data outside of createSlice)
-    reactionAdded (
+    reactionAdded(
       state,
-      action: PayloadAction<{ postId: string, reaction: keyof Reaction }>) {
+      action: PayloadAction<{ postId: string; reaction: keyof Reaction }>
+    ) {
       const { postId, reaction } = action.payload
       const existingPost = state.entities[postId]
       if (existingPost) {
         existingPost.reactions[reaction]++
       }
     },
-    postUpdated (state, action: PayloadAction<Pick<Post, 'id' | 'title' | 'content'>>) {
+    postUpdated(
+      state,
+      action: PayloadAction<Pick<Post, 'id' | 'title' | 'content'>>
+    ) {
       const { id, title, content } = action.payload
       const existingPost = state.entities[id]
       if (existingPost) {
         existingPost.title = title
         existingPost.content = content
       }
-    }
+    },
   },
   extraReducers: {
     [fetchPosts.pending.type]: (state, action) => {
@@ -73,8 +77,8 @@ const postSlice = createSlice({
       state.error = action.error.message
     },
     // Use the `addOne` reducer for the fulfilled case
-    [addNewPost.fulfilled.type]: postsAdapter.addOne
-  }
+    [addNewPost.fulfilled.type]: postsAdapter.addOne,
+  },
 })
 
 export const { postUpdated, reactionAdded } = postSlice.actions
@@ -83,12 +87,12 @@ export const { postUpdated, reactionAdded } = postSlice.actions
 export const {
   selectAll: selectAllPosts,
   selectById: selectPostById,
-  selectIds: selectPostIds
-} = postsAdapter.getSelectors<any>(state => state.posts)
+  selectIds: selectPostIds,
+} = postsAdapter.getSelectors<any>((state) => state.posts)
 
 export const selectPostsByUser = createSelector(
   [selectAllPosts, (state: RootState, userId: string) => userId],
-  (posts, userId) => posts.filter(post => post.user === userId)
+  (posts, userId) => posts.filter((post) => post.user === userId)
 )
 
 export default postSlice.reducer
