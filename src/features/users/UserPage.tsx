@@ -7,11 +7,13 @@ import { useTypedSelector } from '../../app/store'
 type TParams = { userId: string }
 const UserPage = ({ match }: RouteComponentProps<TParams>) => {
   const { userId } = match.params
-  const user = useTypedSelector(state => selectUserById(state, userId))!
+  const user = useTypedSelector((state) => selectUserById(state, userId))
 
-  const postsForUser = useTypedSelector(state => selectPostsByUser(state, userId))
+  const postsForUser = useTypedSelector((state) =>
+    selectPostsByUser(state, userId)
+  )
 
-  const postTitles = postsForUser.map(post => (
+  const postTitles = postsForUser.map((post) => (
     <li key={post.id}>
       <Link to={`/posts/${post.id}`}>{post.title}</Link>
     </li>
@@ -19,7 +21,7 @@ const UserPage = ({ match }: RouteComponentProps<TParams>) => {
 
   return (
     <section>
-      <h2>{user.name}</h2>
+      <h2>{user?.name ?? 'Unknown'}</h2>
 
       <ul>{postTitles}</ul>
     </section>
