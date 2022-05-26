@@ -1,30 +1,33 @@
-import React, { useEffect } from 'react'
-import { useSelector } from 'react-redux'
-import { fetchPosts, selectPostIds } from './postSlice'
+import React, { useMemo } from 'react'
 import PostExcerpt from './PostExcerpt'
-import { RootState, useAppDispatch } from '../../app/store'
 import { useGetPostsQuery } from '../api/apiSlice'
 import { Spinner } from '../../components/Spinner'
-import { Post } from '../../app/types'
 
 export const PostsList = () => {
   const {
-    data: posts = [],
+    data: posts,
     isLoading,
     isSuccess,
     isError,
     error,
   } = useGetPostsQuery(null)
 
+  // useMemo prevents sorting on every rerender
+  const sortedPosts = useMemo(() => {
+    const sortedPosts = posts?.slice() || []
+    sortedPosts.sort((a, b) => b.date.localeCompare(a.date))
+    return sortedPosts
+  }, [posts])
+
   let content
 
   if (isLoading) {
     content = <Spinner text="Loading..." />
   } else if (isSuccess) {
-    content = <div>Count: {posts.length}</div>
-    // content = posts.map((post) => (
-    //   <PostExcerpt key={post.id} postId={post.id} />
-    // ))
+    // content = <div>{JSON.stringify(data)}</div>
+    content = sortedPosts.map((post) => (
+      <PostExcerpt key={post.id} post={post} />
+    ))
   } else if (isError) {
     content = <div>{error.toString()}</div>
   }

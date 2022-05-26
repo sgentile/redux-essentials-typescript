@@ -1,29 +1,43 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
 import PostAuthor from './PostAuthor'
 import TimeAgo from './TimeAgo'
-import { selectPostById } from './postSlice'
-import { RouteComponentProps } from 'react-router-dom'
+import { Link, RouteComponentProps } from 'react-router-dom'
+import { useGetPostQuery } from '../api/apiSlice'
+import { Spinner } from '../../components/Spinner'
+import ReactionButtons from './ReactionButtons'
 
 type TParams = { postId: string }
 export const SinglePostPage = ({ match }: RouteComponentProps<TParams>) => {
   const { postId } = match.params
-  const post = useSelector(state => selectPostById(state, postId))
+  const {
+    data: post,
+    isFetching,
+    isSuccess,
+    isError,
+    error,
+  } = useGetPostQuery(postId)
 
-  return post
-    ? (
-      <section>
-        <article className='post'>
-          <h2>{post.title}</h2>
+  let content
+  if (isError) {
+    content = <div>{error}</div>
+  } else if (isFetching) {
+    content = <Spinner text="Loading..." />
+  } else if (isSuccess) {
+    content = (
+      <article className="post">
+        <h2>{post.title}</h2>
+        <div>
           <PostAuthor userId={post.user} />
           <TimeAgo timestamp={post.date} />
-          <p className='post-content'>{post.content}</p>
-        </article>
-      </section>
+        </div>
+        <p className="post-content">{post.content}</p>
+        <ReactionButtons post={post} />
+        <Link to={`/editPost/${post.id}`} className="button">
+          Edit Post
+        </Link>
+      </article>
     )
-    : (
-      <section>
-        <h2>Post not found!</h2>
-      </section>
-    )
+  }
+
+  return <section>{content}</section>
 }

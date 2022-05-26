@@ -8,15 +8,25 @@ export const apiSlice = createApi({
   reducerPath: 'api',
   // All of our requests will have URLs starting with '/fakeApi'
   baseQuery: fetchBaseQuery({ baseUrl: '/fakeApi' }),
+  // tagTypes: ['Post'],
   // The "endpoints" represent operations and requests for this server
   endpoints: (builder) => ({
     // The `getPosts` endpoint is a "query" operation that returns data
-    getPosts: builder.query<Post[], null>({
+    getPosts: builder.query({
       // The URL for the request is '/fakeApi/posts'
       query: () => '/posts',
+      transformResponse: (response: { posts: Post[] }) => {
+        return response.posts
+      },
+    }),
+    getPost: builder.query({
+      query: (postId) => `/posts/${postId}`,
+      transformResponse: (response: { post: Post }) => {
+        return response.post
+      },
     }),
   }),
 })
 
 // Export the auto-generated hook for the `getPosts` query endpoint
-export const { useGetPostsQuery } = apiSlice
+export const { useGetPostsQuery, useGetPostQuery } = apiSlice

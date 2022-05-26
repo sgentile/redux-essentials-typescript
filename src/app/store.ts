@@ -1,4 +1,4 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 import postsReducer from '../features/posts/postSlice'
 import usersReducer from '../features/users/usersSlice'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'

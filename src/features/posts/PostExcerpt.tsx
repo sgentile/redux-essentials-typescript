@@ -3,12 +3,10 @@ import PostAuthor from './PostAuthor'
 import TimeAgo from './TimeAgo'
 import ReactionButtons from './ReactionButtons'
 import { Link } from 'react-router-dom'
-import { selectPostById } from './postSlice'
-import { useTypedSelector } from '../../app/store'
-import { EntityId } from '@reduxjs/toolkit'
+import { Post } from '../../app/types'
 
-const PostExcerpt = ({ postId }: { postId: EntityId }) => {
-  const post = useTypedSelector((state) => selectPostById(state, postId))
+const PostExcerpt = ({ post }: { post: Post }) => {
+  // const post = useTypedSelector((state) => selectPostById(state, postId))
   return post ? (
     <article className="post-excerpt" key={post.id}>
       <h3>{post.title}</h3>
